@@ -5,17 +5,22 @@ import jellyfish
 
 
 class SemanticScholarLoader(BaseWebAPIDataLoader):
-    def __init__(self):
+    SS_key = None
+    def __init__(self,SS_key):
         """
         Initializes the SemanticScholarLoader class.
         Args:
-          None
+          SS_key (str, optional): Semantic Scholar partner key
         Returns:
           None
         Notes:
           Calls the superclass constructor with the SemanticScholar API URL.
         """
-        super().__init__("https://api.semanticscholar.org/graph/v1/paper/search")
+        if SS_key:
+            self.SS_key = SS_key
+            super().__init__("https://partner.semanticscholar.org/graph/v1/paper/search")
+        else:
+            super().__init__("https://api.semanticscholar.org/graph/v1/paper/search")
 
     def fetch_data(self, search_query, limit=100, year_range=None):
         """
@@ -24,6 +29,7 @@ class SemanticScholarLoader(BaseWebAPIDataLoader):
           search_query (str): The query to search for.
           limit (int, optional): The maximum number of results to return. Defaults to 100.
           year_range (tuple, optional): A tuple of two integers representing the start and end year of the search. Defaults to None.
+          x-api-key (str, optional): Semantic scholar partner key
         Returns:
           list: A list of paper objects.
         Examples:
@@ -34,6 +40,7 @@ class SemanticScholarLoader(BaseWebAPIDataLoader):
             "query": search_query,
             "limit": limit,
             "fields": "title,url,abstract,authors,citationStyles,journal,citationCount,year,externalIds",
+            "x-api-key": self.SS_key,
         }
 
         if year_range is not None:

@@ -16,7 +16,7 @@ from autoresearcher.data_sources.web_apis.semantic_scholar_loader import (
 )
 
 
-def literature_review(research_question, output_file=None):
+def literature_review(research_question, output_file=None, SS_key=None):
     """
     Generates an academic literature review for a given research question.
     Args:
@@ -41,7 +41,7 @@ def literature_review(research_question, output_file=None):
       1. ...
       Keyword combinations used to search for papers: 1. AI healthcare, 2. impact AI healthcare
     """
-    SemanticScholar = SemanticScholarLoader()
+    SemanticScholar = SemanticScholarLoader(SS_key)
 
     print(
         colored(
@@ -83,7 +83,7 @@ def literature_review(research_question, output_file=None):
     # Append the keyword combinations to the literature review
     literature_review += "\n\nKeyword combinations used to search for papers: "
     literature_review += ", ".join(
-        [f"{i+1}. {combination}" for i, combination in enumerate(keyword_combinations)]
+        [f"{i + 1}. {combination}" for i, combination in enumerate(keyword_combinations)]
     )
 
     # Print the academic literature review
@@ -101,15 +101,25 @@ def literature_review(research_question, output_file=None):
 if __name__ == "__main__":
     import sys
 
-    if len(sys.argv) > 2:
+    if len(sys.argv) > 3:
         research_question = sys.argv[1]
         output_file = sys.argv[2]
+        SS_key = sys.argv[3]
+    elif len(sys.argv) > 2:
+        research_question = sys.argv[1]
+        if sys.argv[2].lower().endswith('.txt'):
+            output_file = sys.argv[2]
+            SS_key = None
+        else:
+            SS_key = sys.argv[2]
+            output_file = None
     elif len(sys.argv) > 1:
         research_question = sys.argv[1]
         output_file = None
+        SS_key = None
     else:
         raise ValueError(
             "No research question provided. Usage: python literature_review.py 'My research question' 'optional_output_file.txt'"
         )
 
-    literature_review(research_question, output_file)
+    literature_review(research_question, output_file, SS_key)

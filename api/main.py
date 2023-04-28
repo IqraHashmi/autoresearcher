@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from autoresearcher import literature_review
+
 # Placeholder function for literature_review for fast testing
 # async def literature_review(q: str):
 #     return "answer to: " + q
@@ -15,7 +16,7 @@ allowed_origins = [
     "*",
     "https://restfox.dev",  # Testing
     "http://localhost:3000",  # Local development
-    "https://example.com",    # Production domain
+    "https://example.com",  # Production domain
 ]
 
 # Add CORS middleware to the FastAPI application
@@ -27,28 +28,37 @@ app.add_middleware(
     allow_headers=["*"],  # Allow all headers
 )
 
+
 # Placeholder class for BrowserError (replace with your implementation)
 class BrowserError(Exception):
     pass
+
 
 # Define a Pydantic model for the POST request body
 # this should be for ALL tools + workflows
 class QuestionModel(BaseModel):
     research_question: str
 
+
 # this is purely for testing and memes
 # return a text response @ get
 # @app.get("/literature-review")
 @app.get("/q/{q}")
-async def get_literature_review(q: str):
+async def get_literature_review(q: str, SS_key=None):
     print('[GET] New Question:', q)
+    print('[GET] SemanticScholar key:', SS_key)
+
     try:
         if q is None:
-           return "type a question after /q/type your question here "
-        researcher = literature_review(q)
+            return "type a question after /q/type your question here "
+        if SS_key is None:
+            researcher = literature_review(q)
+        else:
+            researcher = literature_review(q, None, SS_key)
         return researcher
     except BrowserError as e:
         return {"error": str(e)}
+
 
 # return a JSON response @ POST
 # optionally return a streamed response
@@ -63,6 +73,7 @@ async def get_literature_review(request: QuestionModel):
     except BrowserError as e:
         return {"error": str(e)}
 
+
 # to support plugins
 @app.get("/.well-known/ai-plugin.json")
 async def load_plugin(request: Request):
@@ -75,6 +86,7 @@ async def load_plugin(request: Request):
     text = text.replace("PLUGIN_HOSTNAME", f"http://{host}")
     return Response(content=text, media_type="text/json")
 
+
 @app.get("/openapi.yaml")
 async def load_openapi(request: Request):
     host = request.headers["host"]
@@ -86,8 +98,8 @@ async def load_openapi(request: Request):
     text = text.replace("PLUGIN_HOSTNAME", f"http://{host}")
     return Response(content=text, media_type="text/yaml")
 
+
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="127.0.0.1", port=8000)
-
-
