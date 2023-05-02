@@ -73,6 +73,17 @@ You can also pass an output file name as a .txt file:
 researcher = literature_review(research_question, output_file="my_literature_review.txt")
 ```
 
+You can also pass a Semantic Scholar partner key:
+
+```python
+researcher = literature_review(research_question, SS_key="....")
+```
+OR 
+
+```python
+researcher = literature_review(research_question, output_file="my_literature_review.txt", SS_key="....")
+```
+
 This will generate a literature review based on the research question.
 
 ## Contributing
