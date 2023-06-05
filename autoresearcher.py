@@ -18,7 +18,7 @@ openai.api_key = OPENAI_API_KEY
 
 
 def openai_call(
-    prompt: str, use_gpt4: bool = False, temperature: float = 0.5, max_tokens: int = 100
+        prompt: str, use_gpt4: bool = False, temperature: float = 0.5, max_tokens: int = 100
 ):
     """
     Calls OpenAI API to generate a response to a given prompt.
@@ -151,23 +151,23 @@ def literature_review(research_question, SS_key=None):
         search_query, keyword_combinations=keyword_combinations, year_range="2000-2023"
     )
     print(colored("Top 20 papers fetched!", "green"))
-    #print(json.dumps(top_papers))
+    # print(json.dumps(top_papers))
     return top_papers
 
 
 if __name__ == "__main__":
-    if len(sys.argv) > 2:
-        research_question = sys.argv[1]
-        SS_key = sys.argv[2]
-    elif len(sys.argv) > 1:
-        research_question = sys.argv[1]
-        SS_key = None
-    else:
-        raise ValueError(
-            "No research question provided. Usage: python literature_review.py 'My research question'"
-        )
+    research_question = sys.argv[1]
+    SS_key = sys.argv[2]
+    email = sys.argv[3]
+    fileName = sys.argv[4]
 
     papers = literature_review(research_question, SS_key)
-    print("Papers starts:")
-    print(json.dumps(papers))
-    print("Papers ends:")
+    file_path = os.path.join(email, fileName + ".json")
+
+    # Check if the directory exists, if not create it
+    directory = os.path.dirname(file_path)
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    with open(file_path, 'w') as file:
+        json.dump(papers, file)
+

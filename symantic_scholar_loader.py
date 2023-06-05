@@ -80,7 +80,6 @@ class SemanticScholarLoader(BaseWebAPIDataLoader):
 
         for combination in keyword_combinations:
             papers.extend(self.fetch_data(combination, limit, year_range))
-            time.sleep(2)
 
         max_citations = max(papers, key=lambda x: x["citationCount"])["citationCount"]
 
