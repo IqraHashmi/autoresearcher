@@ -1,6 +1,28 @@
-# Combine answers into a concise literature review using OpenAI API
 from openai_call import openai_call
 import tiktoken
+
+literature_review_prompt = """"
+`reset`
+`no quotes`
+`no explanations`
+`no prompt`
+`no self-reference`
+`no apologies`
+`no filler`
+`just answer`
+
+I will give you a list of research findings and a research question.
+
+Synthesize the list of research findings to generate a scientific literature review. Also, identify knowledge gaps and future research directions.
+
+Make sure to always reference every research finding you use with in-text citations in APA format using the source provided. 
+
+Only use the research findings I provide you with to create your literature review. Only give me the output and nothing else.
+
+Now, using the concepts above, create a literature review for this research question '{research_question}' using the following research findings:
+
+{answer_list}
+"""
 
 
 def combine_answers(answers, research_question, use_gpt4=False, temperature=0.1):
@@ -20,40 +42,16 @@ def combine_answers(answers, research_question, use_gpt4=False, temperature=0.1)
       "The impact of AI on society is significant. Answer 1...Answer 2..."
     """
     answer_list = "\n\n".join(answers)
-    literature_review_prompt = f"""
-    `reset`
-    `no quotes`
-    `no explanations`
-    `no prompt`
-    `no self-reference`
-    `no apologies`
-    `no filler`
-    `just answer`
-    
-    I will give you a list of research findings and a research question.
-    
-    Synthesize the list of research findings to generate a scientific literature review. Also, identify knowledge 
-    gaps and future research directions.
-    
-    Make sure to always reference every research finding you use with in-text citations in APA format using the 
-    source provided.
-    
-    Only use the research findings I provide you with to create your literature review. Only give me the output and 
-    nothing else.
-    
-    Now, using the concepts above, create a literature review for this research question '{research_question}' using 
-    the following research findings:
-    
-    {answer_list}
-    """
 
     prompt = literature_review_prompt.format(
         research_question=research_question, answer_list=answer_list
     )
 
+    print("prompt-------------")
+    print(prompt)
+    print("prompt----------")
     # Calculate the tokens in the input
     input_tokens = count_tokens(prompt)
-
     # Calculate the remaining tokens for the response
     remaining_tokens = 4080 - input_tokens
     max_tokens = max(remaining_tokens, 0)
@@ -77,7 +75,6 @@ def count_tokens(text):
     Notes:
       The encoding used is determined by the `tiktoken.encoding_for_model` function.
     """
-    # encoding = tiktoken.encoding_for_model("gpt-4")
-    encoding = tiktoken.encoding_for_model("gpt-3.5-turbo")
+    encoding = tiktoken.encoding_for_model("gpt-4")
     tokens = encoding.encode(text)
     return len(tokens)
